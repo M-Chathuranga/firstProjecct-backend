@@ -1,12 +1,10 @@
-require('dotenv').config();
-
 import express from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import userRouter from "./routers/userRouter.js";
 import jwt from "jsonwebtoken";
 import productRouter from "./routers/productRouter.js";
-
+dotenv.config()
 
 
 
