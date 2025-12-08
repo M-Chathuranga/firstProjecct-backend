@@ -2,20 +2,6 @@ import Product from "../models/product.js";
 import { isAdmin } from "./userController.js";
 
 
-// export function getStudentsSync(req, res){
-
-// 	Student.find()
-// 		.then(
-// 			(students) => {
-// 				res.json(students);
-// 			}
-// 	)
-// 		.catch(() => {
-// 			res.json({
-// 				message: "Failed to fetch students",
-// 			});
-// 		});
-// }
 
 
 export async function createProduct(req,res) {

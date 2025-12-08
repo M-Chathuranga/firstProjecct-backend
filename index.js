@@ -4,7 +4,9 @@ import bodyParser from "body-parser";
 import userRouter from "./routers/userRouter.js";
 import jwt from "jsonwebtoken";
 import productRouter from "./routers/productRouter.js";
+import dotenv from "dotenv";
 dotenv.config()
+
 
 
 
@@ -40,8 +42,7 @@ app.use(
     }
 )
 
-const connectionString = process.env.MONGODB_URI;
-
+const connectionString = process.env.MONGODB_URI
 
 
 
