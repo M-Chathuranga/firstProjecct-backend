@@ -20,7 +20,8 @@ app.use(
         const value = req.header("Authorization")
         if(value != null){
             const token = value.replace("Bearer ","")
-            jwt.verify (token,"cbc-6503",
+            jwt.verify (token,
+                process.env.JWT_SECRET,
                 (err,decoded)=>{
                     if(decoded == null){
                         res.status(403).json(
