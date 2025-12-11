@@ -1,83 +1,44 @@
 import express from "express";
 import mongoose from "mongoose";
-import bodyParser from "body-parser";
 import userRouter from "./routers/userRouter.js";
 import jwt from "jsonwebtoken";
-import productRouter from "./routers/productRouter.js";
 import dotenv from "dotenv";
-dotenv.config()
-
-
-
+import productRouter from "./routers/productRouter.js";
+import cors from "cors";
+dotenv.config();
 
 const app = express();
 
-app.use(bodyParser.json());
+const mongoUrl = process.env.MONGODB_URI;
 
-app.use(
-    (req,res,next)=>{
+app.use(cors());
 
-        const value = req.header("Authorization")
-        if(value != null){
-            const token = value.replace("Bearer ","")
-            jwt.verify (token,
-                process.env.JWT_SECRET,
-                (err,decoded)=>{
-                    if(decoded == null){
-                        res.status(403).json(
-                            {
-                                message : "Unauthorized"
-                            }
-                        )
-                    }else{
-                        req.user = decoded
-                        next()
-                    }
-                }
-            )
-        }else{
-             next()
-        }
+mongoose.connect(mongoUrl);
+const connection = mongoose.connection;
+connection.once("open", () => {
+  console.log("Database connected");
+});
 
-    
-    }
-)
+app.use(express.json());
 
-const connectionString = process.env.MONGODB_URI
+app.use((req, res, next) => {
+  const token = req.header("Authorization")?.replace("Bearer ", "");
+  console.log(token);
 
+  if (token != null) {
+    jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
+      if (!error) {
+        req.user = decoded;
+        console.log(decoded);
+      }
+    });
+  }
+  next();
+});
 
+app.use("/api/users", userRouter);
+app.use("/api/products", productRouter);
 
-mongoose.connect(connectionString).then(
-
-    ()=>{
-        console.log("Database connected")
-    }
-
-).catch(
-    ()=>{
-        console.log("Faild to connect to the database")
-    }
-)
-
-
-
-
-app.use("/api/users",userRouter)
-app.use("/api/products",productRouter)
-
-// app.delete("/", 
-//     ()=>{
-//        console.log("This is a DELETE request");
-//     }
-// );
-
-
-
-
-
-
-app.listen(5000,
-    () =>{
-    console.log("server started..");
-    }
-)    
+app.listen(5000, () => {
+  console.log("Server is running on port 5000");
+});
