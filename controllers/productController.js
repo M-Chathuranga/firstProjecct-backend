@@ -6,14 +6,14 @@ import { isAdmin } from "./userController.js";
 
 export async function createProduct(req,res) {
     if( ! isAdmin(req)) {
-        return res.status(403).ison(
+        return res.status(403).jsonson(
             {
                 message : "Access denied. Admins only"
             }
         )
     }
 
-    const product = new Product(req,body);
+    const product = new Product(req.body);
 
     try{
         const response = await product.save();
