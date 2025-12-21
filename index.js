@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import productRouter from "./routers/productRouter.js";
 import cors from "cors";
+import orderRouter from "./routers/orderRouter.js";
 dotenv.config();
 
 const app = express();
@@ -38,6 +39,7 @@ app.use((req, res, next) => {
 
 app.use("/api/users", userRouter);
 app.use("/api/products", productRouter);
+app.use("/api/orders",orderRouter);
 
 app.listen(5000, () => {
   console.log("Server is running on port 5000");
