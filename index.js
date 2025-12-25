@@ -6,36 +6,52 @@ import dotenv from "dotenv";
 import productRouter from "./routers/productRouter.js";
 import cors from "cors";
 import orderRouter from "./routers/orderRouter.js";
+import bodyParser from "body-parser";
 dotenv.config();
 
 const app = express();
 
 const mongoUrl = process.env.MONGODB_URI;
 
+app.use(bodyParser.json())
 app.use(cors());
 
-mongoose.connect(mongoUrl);
-const connection = mongoose.connection;
-connection.once("open", () => {
-  console.log("Database connected");
-});
+mongoose.connect(mongoUrl).then(
+    ()=>{
+        console.log("Connected to database")
+    }
+).catch(
+    ()=>{
+        console.log("Failed to connect to the database")
+    }
+)
 
 app.use(express.json());
 
-app.use((req, res, next) => {
-  const token = req.header("Authorization")?.replace("Bearer ", "");
-  console.log(token);
-
-  if (token != null) {
-    jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
-      if (!error) {
-        req.user = decoded;
-        console.log(decoded);
-      }
-    });
-  }
-  next();
-});
+app.use(
+    (req,res,next)=>{
+        const value = req.header("Authorization")
+        if(value != null){
+            const token = value.replace("Bearer ","")
+            jwt.verify(
+                token,
+                process.env.JWT_SECRET,
+                (err,decoded)=>{
+                    if(decoded == null){
+                        res.status(403).json({
+                            message : "Unauthorized"
+                        })
+                    }else{
+                        req.user = decoded
+                        next()
+                    }                    
+                }
+            )
+        }else{
+            next()
+        }        
+    }
+)
 
 app.use("/api/users", userRouter);
 app.use("/api/products", productRouter);
